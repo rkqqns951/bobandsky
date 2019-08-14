@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="information">
+  <select id="gbList1" 
+		resultType="information.dto.InformationDTO">
+		select idx,name,email,hp,content,post_date
+		from information
+		where ${searchkey} like #{search} 
+		order by idx desc
+	</select>
+	<select id="gbListAll1" resultType="information.dto.InformationDTO">
+	    select idx,name,email,hp,content,post_date
+		from information
+		where name like #{search} or content like #{search}
+		order by idx desc
+	</select>
+	<insert id="gbInsert1">
+	    insert into information (idx, name, email, hp, passwd, content) 
+	    values ( information_seq.nextval, 
+	    #{name}, #{email}, #{hp}, #{passwd}, #{content})
+	</insert>
+	<select id="passwdCheck1" resultType="int">
+	    select count(*) from information 
+	    where idx=#{idx} and passwd=#{passwd}
+	</select>
+	<select id="gbDetail1" parameterType="int" 
+	resultType="information.dto.InformationDTO">
+	    select * from information where idx=#{idx}
+	</select>
+	<update id="gbUpdate1" parameterType="information.dto.InformationDTO">
+	    update INFORMATION set 
+	    name=#{name}, email=#{email}, hp=#{hp}, passwd=#{passwd}, 
+	    content = #{content}
+        where idx=#{idx} 
+	</update>
+	<delete id="gbDelete1" parameterType="int">
+	    delete from information where idx=#{idx}
+	</delete>
+	
+	
+</mapper>
+
+  

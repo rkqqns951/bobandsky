@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bob">
+  <select id="list11" resultType="bob.dto.BobDTO">
+    select num,writer,subject,reg_date,readcount
+	,filename,filesize,down,re_level
+	,(select count(*) from bob_comment 
+	where bob_num=num) comment_count, show
+	from bob
+	order by ref desc, re_step
+  </select>
+  
+  <insert id="insert11">
+    insert into bob
+(num,writer,subject,passwd,ref,re_step,re_level,content,ip,filename,filesize) 
+values
+( (select nvl(max(num)+1,1) from bob)
+  ,#{writer},#{subject},#{passwd}
+  ,(select nvl(max(num)+1,1) from bob)
+  ,1,0,#{content},#{ip},#{filename}, #{filesize})
+  </insert>
+  
+  <select id="getFileName11" resultType="String">
+     select filename
+		from bob
+		where num=#{num}
+  </select>
+  
+  <update id="plusDown11">
+    update bob set down=down+1 where num=#{num}
+  </update>
+
+  <select id="view11" resultType="bob.dto.BobDTO">
+		select * from bob
+		where num=#{num}
+  </select>
+  
+  <update id="plusReadCount11">
+      update bob set readcount=readcount+1 
+      where num=#{num}
+  </update>
+  
+  <select id="commentList11" resultType="bob.dto.BobCommentDTO">
+      select * from bob_comment
+		where bob_num=#{num}
+  </select>
+  
+  <insert id="commentAdd11">
+    insert into bob_comment
+	(comment_num,bob_num,writer,content) values
+	((select nvl(max(comment_num)+1,1) from bob_comment)
+	, #{bob_num}, #{writer}, #{content})
+  </insert>
+  
+  <update id="updateStep11">
+     update bob
+     set re_step=re_step+1
+     where ref=#{ref} and re_step >= #{re_step}
+  </update>
+  
+  <insert id="reply11">
+     insert into bob
+	(num,writer,subject,passwd,ref,re_step,re_level,
+	content,ip,filename,filesize) 
+	values
+	( (select nvl(max(num)+1,1) from bob)
+  	,#{writer},#{subject},#{passwd}
+  	,#{ref}, #{re_step}, #{re_level}
+ 	,#{content},#{ip},#{filename}, #{filesize})
+  </insert>
+  
+  <select id="pass_check11" resultType="String">
+    select passwd from bob
+	where num=#{num} and passwd=#{passwd}
+  </select>
+  
+	<update id="update11">
+		update bob
+		set writer=#{writer}, subject=#{subject}
+			, content=#{content}, filename=#{filename}
+			, filesize=#{filesize}, down=#{down} ,passwd=#{passwd}
+		where num=#{num}
+	</update>
+	
+	<update id="delete11">
+	    update bob set show='n'
+	    where num=#{num}
+	</update>
+  
+</mapper>
+
+  
